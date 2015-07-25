@@ -1,7 +1,12 @@
-## Put comments here that give an overall description of what your
-## functions do
+##The functions below are used to create a special object 
+##that stores a numeric matrix and caches it's inverse
 
-## Write a short comment describing this function
+
+## The function makeCacheMatrix creates a list containing functions to
+## set the value of the matrix
+## get the value of the matrix
+## set the value of the inverse of the matrix
+## get the value of the inverse of the matrix
 
 makeCacheMatrix <- function(x = matrix()) {
 	
@@ -32,18 +37,89 @@ makeCacheMatrix <- function(x = matrix()) {
 }
 
 
-## Write a short comment describing this function
+## The function cahceSolve takes a matrix as a parameter and
+## calculates the inverse of this matrix
+## However, if the inverse of the matrix exists in the cache,then
+## it retrieves this inverse from the cache and returns the same
 
-cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+##Note: Assuming matrix being passed is invertible
+
+cacheSolve <- function(x, ...) 
+{
+        ##checking if the inverse of the given matrix is in the Cache
 	invM<-x$getinv()
 	if(!is.null(invM))
 	{
-		message("getting Cached Inverse")
+		message("getting Matrix Inverse from the Cache")
 		return(invM)
 	}
+	
 	data<-x$get()
-	invM<-solve(data,...)
-	x$setinv(invM)
+	
+	##checking if the given matrix is a Square Matrix
+	if(nrow(data)==ncol(data))
+	{
+	        invM<-solve(data,...)
+	        x$setinv(invM)
+	        
+	}
+	else
+	{
+	        stop("Please provide a Square Matrix to calculate the Inverse")
+	}
 	invM
 }
+
+
+
+## Sample Input: 1
+## m<-matrix(c(1,2,3,4),2,2)
+## cm<-makeCacheMatrix(m)
+## cacheSolve(cm)
+
+
+## Sample Output: 1
+##      [,1] [,2]
+
+## [1,]  -2  1.5
+## [2,]   1  -0.5
+
+
+
+## Sample Input: 2
+## cacheSolve(cm)
+
+
+## Sample Output: 2
+## getting Matrix Inverse from the Cache
+##      [,1] [,2]
+
+## [1,]  -2  1.5
+## [2,]   1  -0.5
+
+
+
+## Sample Input: 3
+## m<-matrix(c(7,0,-3,2,3,4,1,-1,-2),3,3)
+## cm<-makeCacheMatrix(m)
+## cacheSolve(cm)
+
+## Sample Output: 3
+##      [,1]  [,2]  [,3]
+
+## [1,] -2     8    -5
+## [2,]  3    -11    7
+## [3,]  9    -34    21
+
+
+## Sample Input: 4
+## cacheSolve(cm)
+
+## Sample Output: 4
+## getting Matrix Inverse from the Cache
+##      [,1]  [,2]  [,3]
+
+## [1,] -2     8    -5
+## [2,]  3    -11    7
+## [3,]  9    -34    21
+
