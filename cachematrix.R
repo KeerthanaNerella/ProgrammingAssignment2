@@ -3,37 +3,44 @@
 
 
 ## The function makeCacheMatrix creates a list containing functions to
-## set the value of the matrix
-## get the value of the matrix
-## set the value of the inverse of the matrix
-## get the value of the inverse of the matrix
+## set the value of the matrix - set
+## get the value of the matrix - get
+## set the value of the inverse of the matrix - setInverse
+## get the value of the inverse of the matrix - getInverse
 
 makeCacheMatrix <- function(x = matrix()) {
 	
-	invM<-NULL
+	inverseMatrix<-NULL
 
 	set <-function(m)
 		{
+			##caching the matrix value using <<- operator	
 			x<<-m
-			invM<<-NULL
+
+			## Initially value of inverseMatrix will be null
+			inverseMatrix<<-NULL
 		}
 
 	get <-function()
 		{
+			##retrieving the matrix value
 			 x
 		}
 
-	setinv <-function(inv)
+	setInverse<-function(inverseM)
 		{
-			 invM<<-inv
+			##caching the inverseMatrix value using <<- operator	
+			 inverseMatrix<<-inverseM
 		}
 
-	getinv <-function()
+	getInverse <-function()
 		{
-			 invM
+			##retrieving the inverseMatrix value
+			 inverseMatrix
 		}
 
-	list(set=set,get=get,setinv=setinv,getinv=getinv)
+	##creating a list whose elemets are functions to set and get matrix and inverse matrix values
+	list(set=set,get=get,setInverse=setInverse,getInverse=getInverse)
 }
 
 
@@ -42,35 +49,50 @@ makeCacheMatrix <- function(x = matrix()) {
 ## However, if the inverse of the matrix exists in the cache,then
 ## it retrieves this inverse from the cache and returns the same
 
-##Note: Assuming matrix being passed is invertible
+
+##Note:1)Assuming matrix being passed is invertible
+##         The matrix passed to cacheSolve function is the resulting list of makeCacheMatrix function
 
 cacheSolve <- function(x, ...) 
 {
-        ##checking if the inverse of the given matrix is in the Cache
-	invM<-x$getinv()
-	if(!is.null(invM))
+	##retreiving the inverse of the Matrix from the Cache
+	##if inverse exists in the cache,inverse value is returned,otherwise null value is returned        	
+	
+	inverseMatrix<-x$getInverse()
+
+	##checking if the inverse of the given matrix is in the Cache
+	if(!is.null(inverseMatrix))
 	{
 		message("getting Matrix Inverse from the Cache")
-		return(invM)
+		return(inverseMatrix)
 	}
 	
+	##retrieving matrix value to calculate inverse
 	data<-x$get()
 	
-	##checking if the given matrix is a Square Matrix
+	
+	##An invertible matrix can either be a square or rectangular matrix(called pseudo Inverse)
+	##solve() function calculates the inverse of a square matrix and otherwise throws an error
+	##Reference: http://www.statmethods.net/advstats/matrix.html
+
+	##For pseudoInverse calculation, we can make use of ginv() function from MASS package
+	##Reference: https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/ginv.html
+
+	##As we are using solve() to calcualte Matrix Inverse for this assignment,
+	##To avoid the error we check if the given matrix is a Square Matrix
 	if(nrow(data)==ncol(data))
 	{
-	        invM<-solve(data,...)
-	        x$setinv(invM)
-	        
+	        inverseMatrix<-solve(data,...)
+	        x$setInverse(inverseMatrix)      
 	}
 	else
 	{
 	        stop("Please provide a Square Matrix to calculate the Inverse")
 	}
-	invM
+	inverseMatrix
 }
 
-
+##Sample Test Cases to check the functionality:
 
 ## Sample Input: 1
 ## m<-matrix(c(1,2,3,4),2,2)
